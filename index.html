@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TOEIC Writing - Task 1</title>
+  <title>Write your text</title>
 
   <style>
     :root{
@@ -156,6 +156,9 @@
     .btnPrimary{ background: var(--primary); color:#fff; }
     .btnPrimary:hover{ background: var(--primaryHover); }
 
+    .btnDanger{ background: var(--danger); color:#fff; }
+    .btnDanger:hover{ background: var(--dangerHover); }
+
     .btnGhost{ background: var(--ghost); color: var(--text); border:1px solid var(--border); }
     .btnGhost:hover{ background:#f3f4f6; }
 
@@ -165,6 +168,7 @@
     .btnDownload{ background:#0f172a; color:#fff; }
     .btnDownload:hover{ background:#111827; }
 
+    /* ✅ More visible return button */
     .btnReturn{
       background: var(--primary);
       color:#fff;
@@ -188,6 +192,7 @@
       background:#fff;
     }
 
+    /* ✅ Bottom bar layout: left download, right return */
     .bottomBar{
       display:flex;
       gap:10px;
@@ -286,38 +291,6 @@
       color:#111827;
     }
 
-    /* “Important” + “Exam conditions” boxes (Rise-style) */
-    .infoBox{
-      margin-top: 14px;
-      padding: 14px;
-      border:1px solid #93c5fd;
-      background:#eff6ff;
-      border-radius: 12px;
-      color:#1f2937;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    .infoBox strong{ font-weight: 800; }
-    .infoTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-    .infoList{
-      margin: 8px 0 0;
-      padding-left: 18px;
-    }
-    .infoList li{ margin: 6px 0; }
-
-    .noteLine{
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      text-align:center;
-    }
-
     /* PRO overlay */
     .overlay{
       position:fixed;
@@ -363,17 +336,17 @@
 <body>
   <div class="page">
     <div class="card">
-      <h1 class="title">✍️ Write your response</h1>
+      <h1 class="title">✍️ Write your text</h1>
       <div class="subtitle">
         Write <strong>one complete sentence</strong> based on the picture using the <strong>two words</strong> provided.
       </div>
 
       <div class="prompt" id="promptBox">
-        <h2>✍🏻 Respond to a written request</h2>
+  <h2>📧 Respond to the e-mail</h2>
 
-        <p>Read the e-mail.</p>
+  <p><strong>Directions:</strong> Read the e-mail.</p>
 
-        <div class="draftBox">
+  <div class="draftBox">
 From: Greenway Office Management  
 To: All Building Employees  
 Subject: Office Facilities Update  
@@ -395,31 +368,6 @@ Greenway Office Management
   </p>
 </div>
 
-        <p class="instruction">
-          Write one clear sentence and make sure you use both words correctly.
-        </p>
-      </div>
-
-      <!-- ✅ Important box (writing version) -->
-      <div class="infoBox">
-        <div class="infoTitle">ℹ️ <span>Important – For all writing tasks</span></div>
-        <p style="margin:0 0 10px;">
-          The <strong>Return to the module</strong> button will bring you back to this lesson once you’re done writing.
-        </p>
-        <p style="margin:0 0 10px;">
-          Your saved drafts stay on <strong>this device and browser only</strong>. They are not shared or submitted automatically.
-        </p>
-        <ul class="infoList">
-          <li>👉 If you want to keep a draft, <strong>download it and rename the file</strong> on your computer.</li>
-          <li>👉 If you are using a <strong>shared computer</strong>, remember to <strong>delete your saved drafts</strong> before leaving.</li>
-        </ul>
-      </div>
-
-      <!-- ✅ “Click the button below…” line adapted for writing -->
-      <div class="noteLine">
-        📝 Click the button below to save your draft. You can save as many drafts as you want.
-      </div>
-
       <div class="meta">
         <div class="pill"><span>ℹ️</span><span id="status">Ready</span></div>
       </div>
@@ -437,13 +385,9 @@ Greenway Office Management
         <button id="returnBtn" class="btnReturn">↩️ Return to the module</button>
       </div>
 
-      <!-- ✅ Exam conditions (writing version) -->
-      <div class="infoBox" style="margin-top:14px;">
-        <div class="infoTitle">ℹ️ <span>Exam conditions</span></div>
-        <p style="margin:0;">
-          In the real TOEIC Writing test, your responses are submitted as written text and you will not receive feedback during the test.
-          Manage your time carefully and focus on clear, accurate sentences.
-        </p>
+      <div class="hint">
+        Your saved drafts stay on this device/browser only. If you’re on a shared computer, delete your drafts when finished.
+        If you want to keep them, download and rename your files.
       </div>
 
       <div class="saved">
@@ -469,7 +413,7 @@ Greenway Office Management
 
   <script>
     /***********************
-     * IndexedDB (persist drafts)
+     * IndexedDB (persist drafts like takes)
      ***********************/
     const DB_NAME = "toeic_writing_db_task1";
     const DB_VERSION = 1;
@@ -495,7 +439,10 @@ Greenway Office Management
       return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
         const store = tx.objectStore(STORE);
-        const req = store.add({ text, createdAt: Date.now() });
+        const req = store.add({
+          text,
+          createdAt: Date.now()
+        });
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
@@ -649,7 +596,7 @@ Greenway Office Management
     async function loadSavedDrafts(){
       savedList.innerHTML = "";
       const drafts = await getAllDraftsFromDB();
-      drafts.sort((a,b) => a.createdAt - b.createdAt);
+      drafts.sort((a,b) => a.createdAt - b.createdAt); // Draft 1 at top
 
       if(drafts.length === 0){
         const empty = document.createElement("div");
@@ -672,6 +619,7 @@ Greenway Office Management
     setStatus("Ready");
     loadSavedDrafts().catch(() => {});
     syncCurrentDownloadState();
+
     writer.addEventListener("input", syncCurrentDownloadState);
 
     saveBtn.onclick = async () => {
@@ -705,10 +653,13 @@ Greenway Office Management
       setStatus("Downloaded current draft.");
     };
 
+    // PRO return: try close, then overlay
     returnBtn.addEventListener("click", (e) => {
       e.preventDefault();
       setStatus("Returning to the module…");
+
       window.close();
+
       setTimeout(() => {
         showOverlay();
         setStatus("Please close this tab to return to the module.");
